@@ -633,11 +633,13 @@ function addImage(src){
                 obj=>canvas.remove(obj)
             );
 
-            // encaixe perfeito
+            // zoom extra para cortar bordas
+            const extraZoom = 1.08;
+
             const scale =
             Math.max(
-                internalSize / img.width,
-                internalSize / img.height
+                (internalSize * extraZoom) / img.width,
+                (internalSize * extraZoom) / img.height
             );
 
             img.set({
