@@ -139,7 +139,6 @@ h1{
     0 0 25px rgba(255,223,0,.5);
 }
 
-/* câmera */
 #cameraVideo{
 
     position:absolute;
@@ -157,7 +156,6 @@ h1{
     background:#000;
 }
 
-/* canvas */
 .canvas-container,
 canvas{
     width:100%!important;
@@ -361,9 +359,8 @@ input[type=file]{
 
 const internalSize = 1080;
 
-// AJUSTE FINAL
-// mantém borda verde/amarela visível
-const cropSize = 1060;
+// AJUSTE FINAL SEM SOBRAS
+const cropSize = 1048;
 
 const canvas = new fabric.Canvas(
     'canvas',
@@ -561,8 +558,8 @@ function addImage(src){
                 obj=>canvas.remove(obj)
             );
 
-            // zoom leve
-            const extraZoom = 1.01;
+            // ZOOM EXATO
+            const extraZoom = 1.025;
 
             const scale =
             Math.max(
@@ -702,7 +699,6 @@ function downloadImage(){
         exportSize
     );
 
-    // corte perfeito
     ctx.save();
 
     ctx.beginPath();
