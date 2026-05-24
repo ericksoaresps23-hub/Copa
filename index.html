@@ -320,6 +320,22 @@ input[type=file]{
     <!-- botões -->
     <div class="controls">
 
+        <!-- tirar foto -->
+        <button
+            class="btn capture-btn"
+            onclick="capturePhoto()"
+        >
+            TIRAR FOTO
+        </button>
+
+        <!-- trocar câmera -->
+        <button
+            class="btn switch-btn"
+            onclick="switchCamera()"
+        >
+            TROCAR CÂMERA
+        </button>
+
         <!-- upload -->
         <div class="btn upload-btn">
 
@@ -332,22 +348,6 @@ input[type=file]{
             >
 
         </div>
-
-        <!-- trocar câmera -->
-        <button
-            class="btn switch-btn"
-            onclick="switchCamera()"
-        >
-            TROCAR CÂMERA
-        </button>
-
-        <!-- tirar foto -->
-        <button
-            class="btn capture-btn"
-            onclick="capturePhoto()"
-        >
-            TIRAR FOTO
-        </button>
 
         <!-- salvar -->
         <button
@@ -574,7 +574,7 @@ function capturePhoto(){
     const ctx =
     temp.getContext('2d');
 
-    // SEM espelhamento
+    // sem espelhamento
     ctx.drawImage(
         video,
         0,
@@ -633,11 +633,11 @@ function addImage(src){
                 obj=>canvas.remove(obj)
             );
 
-            // zoom leve pra evitar bordas
+            // encaixe perfeito
             const scale =
             Math.max(
-                (internalSize * 1.02) / img.width,
-                (internalSize * 1.02) / img.height
+                internalSize / img.width,
+                internalSize / img.height
             );
 
             img.set({
@@ -750,7 +750,7 @@ function initTouch(obj){
 }
 
 // =========================
-// download sem bordas
+// download PNG redondo
 // =========================
 
 function downloadImage(){
@@ -759,22 +759,32 @@ function downloadImage(){
 
     canvas.renderAll();
 
-    // canvas exportação
-    const exportCanvas =
-    document.createElement('canvas');
-
     const exportSize = 1080;
 
-    exportCanvas.width =
+    // canvas final
+    const finalCanvas =
+    document.createElement('canvas');
+
+    finalCanvas.width =
     exportSize;
 
-    exportCanvas.height =
+    finalCanvas.height =
     exportSize;
 
     const ctx =
-    exportCanvas.getContext('2d');
+    finalCanvas.getContext('2d');
 
-    // recorte circular
+    // transparente
+    ctx.clearRect(
+        0,
+        0,
+        exportSize,
+        exportSize
+    );
+
+    // recorte redondo
+    ctx.save();
+
     ctx.beginPath();
 
     ctx.arc(
@@ -803,17 +813,21 @@ function downloadImage(){
             exportSize
         );
 
+        ctx.restore();
+
+        // PNG transparente
+        const png =
+        finalCanvas.toDataURL(
+            'image/png'
+        );
+
         const link =
         document.createElement('a');
 
         link.download =
         'brasil-copa.png';
 
-        link.href =
-        exportCanvas.toDataURL(
-            'image/png',
-            1
-        );
+        link.href = png;
 
         link.click();
     };
@@ -822,8 +836,12 @@ function downloadImage(){
     canvas.toDataURL({
 
         format:'png',
+
         quality:1,
-        multiplier:1
+
+        multiplier:1,
+
+        withoutTransform:false
     });
 }
 
