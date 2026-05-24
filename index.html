@@ -361,9 +361,9 @@ input[type=file]{
 
 const internalSize = 1080;
 
-// CORTE MAIS SUAVE
-// mantém TODA borda verde/amarela
-const cropSize = 1020;
+// AJUSTE FINAL
+// mantém borda verde/amarela visível
+const cropSize = 1060;
 
 const canvas = new fabric.Canvas(
     'canvas',
@@ -561,8 +561,8 @@ function addImage(src){
                 obj=>canvas.remove(obj)
             );
 
-            // ZOOM MAIS LEVE
-            const extraZoom = 1.03;
+            // zoom leve
+            const extraZoom = 1.01;
 
             const scale =
             Math.max(
@@ -702,7 +702,7 @@ function downloadImage(){
         exportSize
     );
 
-    // corte exato da moldura
+    // corte perfeito
     ctx.save();
 
     ctx.beginPath();
