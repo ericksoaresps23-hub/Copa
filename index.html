@@ -387,6 +387,10 @@ if(
 
 const internalSize = 1080;
 
+// área útil da foto
+// deixa espaço pra borda verde/amarela
+const cropSize = 960;
+
 const canvas = new fabric.Canvas(
     'canvas',
     {
@@ -468,7 +472,6 @@ async function startCamera(){
 
     try{
 
-        // fecha antiga
         if(currentStream){
 
             currentStream
@@ -574,7 +577,6 @@ function capturePhoto(){
     const ctx =
     temp.getContext('2d');
 
-    // sem espelhamento
     ctx.drawImage(
         video,
         0,
@@ -625,7 +627,6 @@ function addImage(src){
         src,
         function(img){
 
-            // remove antigas
             const objects =
             canvas.getObjects();
 
@@ -633,13 +634,13 @@ function addImage(src){
                 obj=>canvas.remove(obj)
             );
 
-            // zoom extra para cortar bordas
-            const extraZoom = 1.08;
+            // zoom extra
+            const extraZoom = 1.10;
 
             const scale =
             Math.max(
-                (internalSize * extraZoom) / img.width,
-                (internalSize * extraZoom) / img.height
+                (cropSize * extraZoom) / img.width,
+                (cropSize * extraZoom) / img.height
             );
 
             img.set({
@@ -763,7 +764,6 @@ function downloadImage(){
 
     const exportSize = 1080;
 
-    // canvas final
     const finalCanvas =
     document.createElement('canvas');
 
@@ -776,7 +776,6 @@ function downloadImage(){
     const ctx =
     finalCanvas.getContext('2d');
 
-    // transparente
     ctx.clearRect(
         0,
         0,
@@ -784,7 +783,8 @@ function downloadImage(){
         exportSize
     );
 
-    // recorte redondo
+    // RECORTE MENOR
+    // mantém borda verde/amarela visível
     ctx.save();
 
     ctx.beginPath();
@@ -792,7 +792,7 @@ function downloadImage(){
     ctx.arc(
         exportSize / 2,
         exportSize / 2,
-        exportSize / 2,
+        cropSize / 2,
         0,
         Math.PI * 2
     );
@@ -801,7 +801,6 @@ function downloadImage(){
 
     ctx.clip();
 
-    // imagem final
     const finalImage =
     new Image();
 
@@ -817,7 +816,6 @@ function downloadImage(){
 
         ctx.restore();
 
-        // PNG transparente
         const png =
         finalCanvas.toDataURL(
             'image/png'
