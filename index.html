@@ -301,10 +301,8 @@ input[type=file]{
         Entre no clima da Copa do Mundo
     </div>
 
-    <!-- moldura -->
     <div id="canvas-wrapper">
 
-        <!-- câmera -->
         <video
             id="cameraVideo"
             autoplay
@@ -312,15 +310,12 @@ input[type=file]{
             muted
         ></video>
 
-        <!-- canvas -->
         <canvas id="canvas"></canvas>
 
     </div>
 
-    <!-- botões -->
     <div class="controls">
 
-        <!-- tirar foto -->
         <button
             class="btn capture-btn"
             onclick="capturePhoto()"
@@ -328,7 +323,6 @@ input[type=file]{
             TIRAR FOTO
         </button>
 
-        <!-- trocar câmera -->
         <button
             class="btn switch-btn"
             onclick="switchCamera()"
@@ -336,7 +330,6 @@ input[type=file]{
             TROCAR CÂMERA
         </button>
 
-        <!-- upload -->
         <div class="btn upload-btn">
 
             ESCOLHER FOTO
@@ -349,7 +342,6 @@ input[type=file]{
 
         </div>
 
-        <!-- salvar -->
         <button
             class="btn download-btn"
             onclick="downloadImage()"
@@ -367,29 +359,11 @@ input[type=file]{
 
 <script>
 
-// =========================
-// suporte câmera
-// =========================
-
-if(
-    !navigator.mediaDevices ||
-    !navigator.mediaDevices.getUserMedia
-){
-
-    alert(
-        'Seu navegador não suporta câmera.'
-    );
-}
-
-// =========================
-// canvas
-// =========================
-
 const internalSize = 1080;
 
-// área útil da foto
-// deixa espaço pra borda verde/amarela
-const cropSize = 960;
+// CORTE MAIS SUAVE
+// mantém TODA borda verde/amarela
+const cropSize = 1020;
 
 const canvas = new fabric.Canvas(
     'canvas',
@@ -404,10 +378,6 @@ const canvas = new fabric.Canvas(
 let currentStream = null;
 
 let currentFacingMode = 'user';
-
-// =========================
-// moldura
-// =========================
 
 const frameUrl =
 'https://i.postimg.cc/mk5SxVz2/file-00000000b1e071f7b530d703a3740bd8-(1).png';
@@ -447,10 +417,6 @@ fabric.Image.fromURL(
     }
 );
 
-// =========================
-// inicia câmera automática
-// =========================
-
 window.addEventListener(
     'load',
     () => {
@@ -458,10 +424,6 @@ window.addEventListener(
         startCamera();
     }
 );
-
-// =========================
-// abrir câmera
-// =========================
 
 async function startCamera(){
 
@@ -513,39 +475,21 @@ async function startCamera(){
 
     }catch(err){
 
-        console.log(err);
-
         alert(
-            'Permita acesso à câmera do aparelho.'
+            'Permita acesso à câmera.'
         );
     }
 }
 
-// =========================
-// trocar câmera
-// =========================
-
 async function switchCamera(){
 
-    if(
-        currentFacingMode === 'user'
-    ){
-
-        currentFacingMode =
-        'environment';
-
-    }else{
-
-        currentFacingMode =
-        'user';
-    }
+    currentFacingMode =
+    currentFacingMode === 'user'
+    ? 'environment'
+    : 'user';
 
     await startCamera();
 }
-
-// =========================
-// tirar foto
-// =========================
 
 function capturePhoto(){
 
@@ -553,15 +497,6 @@ function capturePhoto(){
     document.getElementById(
         'cameraVideo'
     );
-
-    if(!currentStream){
-
-        alert(
-            'Câmera não iniciada.'
-        );
-
-        return;
-    }
 
     const temp =
     document.createElement(
@@ -591,10 +526,6 @@ function capturePhoto(){
     addImage(image);
 }
 
-// =========================
-// upload imagem
-// =========================
-
 document
 .getElementById('upload')
 .onchange = function(e){
@@ -617,10 +548,6 @@ document
     reader.readAsDataURL(file);
 };
 
-// =========================
-// adicionar imagem
-// =========================
-
 function addImage(src){
 
     fabric.Image.fromURL(
@@ -634,8 +561,8 @@ function addImage(src){
                 obj=>canvas.remove(obj)
             );
 
-            // zoom extra
-            const extraZoom = 1.10;
+            // ZOOM MAIS LEVE
+            const extraZoom = 1.03;
 
             const scale =
             Math.max(
@@ -671,10 +598,6 @@ function addImage(src){
         }
     );
 }
-
-// =========================
-// touch zoom
-// =========================
 
 function initTouch(obj){
 
@@ -752,10 +675,6 @@ function initTouch(obj){
     );
 }
 
-// =========================
-// download PNG redondo
-// =========================
-
 function downloadImage(){
 
     canvas.discardActiveObject();
@@ -783,8 +702,7 @@ function downloadImage(){
         exportSize
     );
 
-    // RECORTE MENOR
-    // mantém borda verde/amarela visível
+    // corte exato da moldura
     ctx.save();
 
     ctx.beginPath();
@@ -839,9 +757,7 @@ function downloadImage(){
 
         quality:1,
 
-        multiplier:1,
-
-        withoutTransform:false
+        multiplier:1
     });
 }
 
