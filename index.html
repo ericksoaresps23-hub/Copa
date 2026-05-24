@@ -120,6 +120,8 @@ h1{
     width:320px;
     height:320px;
 
+    aspect-ratio:1/1;
+
     margin:25px auto;
 
     border-radius:50%;
@@ -366,7 +368,7 @@ input[type=file]{
 <script>
 
 // =========================
-// Verifica suporte câmera
+// suporte câmera
 // =========================
 
 if(
@@ -380,7 +382,7 @@ if(
 }
 
 // =========================
-// Canvas
+// canvas
 // =========================
 
 const internalSize = 1080;
@@ -400,7 +402,7 @@ let currentStream = null;
 let currentFacingMode = 'user';
 
 // =========================
-// Moldura
+// moldura
 // =========================
 
 const frameUrl =
@@ -442,7 +444,7 @@ fabric.Image.fromURL(
 );
 
 // =========================
-// Inicia câmera automática
+// inicia câmera automática
 // =========================
 
 window.addEventListener(
@@ -454,7 +456,7 @@ window.addEventListener(
 );
 
 // =========================
-// Abrir câmera
+// abrir câmera
 // =========================
 
 async function startCamera(){
@@ -466,7 +468,7 @@ async function startCamera(){
 
     try{
 
-        // fecha câmera antiga
+        // fecha antiga
         if(currentStream){
 
             currentStream
@@ -517,7 +519,7 @@ async function startCamera(){
 }
 
 // =========================
-// Trocar câmera
+// trocar câmera
 // =========================
 
 async function switchCamera(){
@@ -539,7 +541,7 @@ async function switchCamera(){
 }
 
 // =========================
-// Tirar foto
+// tirar foto
 // =========================
 
 function capturePhoto(){
@@ -572,19 +574,7 @@ function capturePhoto(){
     const ctx =
     temp.getContext('2d');
 
-    // espelha frontal
-    if(
-        currentFacingMode === 'user'
-    ){
-
-        ctx.translate(
-            temp.width,
-            0
-        );
-
-        ctx.scale(-1,1);
-    }
-
+    // SEM espelhamento
     ctx.drawImage(
         video,
         0,
@@ -600,7 +590,7 @@ function capturePhoto(){
 }
 
 // =========================
-// Upload imagem
+// upload imagem
 // =========================
 
 document
@@ -626,7 +616,7 @@ document
 };
 
 // =========================
-// Adiciona imagem
+// adicionar imagem
 // =========================
 
 function addImage(src){
@@ -635,7 +625,7 @@ function addImage(src){
         src,
         function(img){
 
-            // remove imagens antigas
+            // remove antigas
             const objects =
             canvas.getObjects();
 
@@ -643,11 +633,11 @@ function addImage(src){
                 obj=>canvas.remove(obj)
             );
 
-            // escala
+            // zoom leve pra evitar bordas
             const scale =
             Math.max(
-                internalSize / img.width,
-                internalSize / img.height
+                (internalSize * 1.02) / img.width,
+                (internalSize * 1.02) / img.height
             );
 
             img.set({
@@ -680,7 +670,7 @@ function addImage(src){
 }
 
 // =========================
-// Touch zoom mobile
+// touch zoom
 // =========================
 
 function initTouch(obj){
@@ -760,7 +750,7 @@ function initTouch(obj){
 }
 
 // =========================
-// Download
+// download sem bordas
 // =========================
 
 function downloadImage(){
@@ -769,23 +759,72 @@ function downloadImage(){
 
     canvas.renderAll();
 
-    const dataURL =
+    // canvas exportação
+    const exportCanvas =
+    document.createElement('canvas');
+
+    const exportSize = 1080;
+
+    exportCanvas.width =
+    exportSize;
+
+    exportCanvas.height =
+    exportSize;
+
+    const ctx =
+    exportCanvas.getContext('2d');
+
+    // recorte circular
+    ctx.beginPath();
+
+    ctx.arc(
+        exportSize / 2,
+        exportSize / 2,
+        exportSize / 2,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.closePath();
+
+    ctx.clip();
+
+    // imagem final
+    const finalImage =
+    new Image();
+
+    finalImage.onload = function(){
+
+        ctx.drawImage(
+            finalImage,
+            0,
+            0,
+            exportSize,
+            exportSize
+        );
+
+        const link =
+        document.createElement('a');
+
+        link.download =
+        'brasil-copa.png';
+
+        link.href =
+        exportCanvas.toDataURL(
+            'image/png',
+            1
+        );
+
+        link.click();
+    };
+
+    finalImage.src =
     canvas.toDataURL({
 
         format:'png',
-        quality:1
+        quality:1,
+        multiplier:1
     });
-
-    const link =
-    document.createElement('a');
-
-    link.download =
-    'brasil-copa.png';
-
-    link.href =
-    dataURL;
-
-    link.click();
 }
 
 </script>
